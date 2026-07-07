@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: 'Outfit', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #070d19; /* Sleek dark-blue/slate luxury background */
+  color: #f8fafc;
+  overflow-x: hidden;
+}
+
+/* Luxury Glassmorphism */
+.glass-nav {
+  background: rgba(7, 13, 25, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card-hover:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(56, 189, 248, 0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px 0 rgba(14, 165, 233, 0.15);
+}
+
+/* Editorial Serif titles */
+.font-display {
+  font-family: var(--font-serif);
+}
+
+/* Elegant ocean glowing gradients */
+.bg-ocean-gradient {
+  background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.15), transparent 60%),
+              radial-gradient(circle at bottom left, rgba(129, 123, 63, 0.1), transparent 60%),
+              #070d19;
+}
+
+/* Custom calendar inputs styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #070d19;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(14, 165, 233, 0.4);
+}
+
+/* Micro-animations */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 8s infinite;
+}

@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: houserent-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: houserent
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: houserent-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: houserent-backend
+    restart: always
+    environment:
+      DATABASE_URL: "postgresql://postgres:adminpassword@db:5432/houserent?schema=public"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: "super-secret-jwt-key-change-in-production"
+      JWT_REFRESH_SECRET: "super-secret-refresh-jwt-key"
+      STRIPE_SECRET_KEY: "sk_test_mock"
+      PAYHERE_MERCHANT_ID: "merchant_mock"
+      FRONTEND_URL: "http://localhost:3000"
+      PORT: 3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: houserent-frontend
+    restart: always
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:3001"
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "pk_test_mock"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

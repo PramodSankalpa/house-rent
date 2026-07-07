@@ -1,0 +1,239 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  PARTIALLY_PAID
+  REFUNDED
+  FAILED
+}
+
+enum SenderType {
+  GUEST
+  ADMIN
+}
+
+enum ChannelType {
+  EMAIL
+  SMS
+  IN_APP
+}
+
+enum RuleType {
+  SEASONAL
+  WEEKEND
+  CUSTOM
+}
+
+model AdminUser {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String
+  name         String
+  role         Role       @default(ADMIN)
+  auditLogs    AuditLog[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Property {
+  id             String         @id @default(uuid())
+  name           String
+  slug           String         @unique
+  description    String
+  address        String
+  latitude       Float?
+  longitude      Float?
+  googleMapsUrl  String
+  basePrice      Float
+  maxGuests      Int
+  bedrooms       Int
+  bathrooms      Int
+  amenities      Json           // Array of strings
+  rules          Json           // Array of strings
+  images         Image[]
+  bookings       Booking[]
+  pricingRules   PricingRule[]
+  discountTiers  DiscountTier[]
+  blockedDates   BlockedDate[]
+  reviews        Review[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Image {
+  id           String   @id @default(uuid())
+  propertyId   String
+  property     Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  url          String
+  alt          String
+  isMain       Boolean  @default(false)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+}
+
+model Guest {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  phone         String
+  bookings      Booking[]
+  conversations Conversation[]
+  reviews       Review[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Booking {
+  id             String        @id @default(uuid())
+  propertyId     String
+  property       Property      @relation(fields: [propertyId], references: [id])
+  guestId        String
+  guest          Guest         @relation(fields: [guestId], references: [id])
+  checkIn        DateTime
+  checkOut       DateTime
+  basePrice      Float
+  discountAmount Float         @default(0)
+  taxAmount      Float         @default(0)
+  totalAmount    Float
+  amountPaid     Float         @default(0)
+  depositAmount  Float         @default(0)
+  paymentStatus  PaymentStatus @default(PENDING)
+  bookingStatus  BookingStatus @default(PENDING)
+  invoiceNumber  String        @unique
+  payments       Payment[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  bookingId       String
+  booking         Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  amount          Float
+  paymentMethod   String        // STRIPE, PAYHERE, etc.
+  transactionId   String        @unique
+  status          PaymentStatus @default(PENDING)
+  gatewayResponse Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model PricingRule {
+  id         String    @id @default(uuid())
+  propertyId String
+  property   Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  name       String
+  type       RuleType  @default(CUSTOM)
+  startDate  DateTime?
+  endDate    DateTime?
+  multiplier Float     @default(1.0)
+  fixedPrice Float?
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model DiscountTier {
+  id          String   @id @default(uuid())
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  name        String
+  minDays     Int
+  discountPct Float    // e.g. 15.0 for 15%
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model BlockedDate {
+  id         String   @id @default(uuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  date       DateTime
+  reason     String?
+  createdAt  DateTime @default(now())
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  guestId    String
+  guest      Guest    @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  rating     Int
+  comment    String
+  isApproved Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model Conversation {
+  id            String    @id @default(uuid())
+  guestId       String
+  guest         Guest     @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  lastMessageAt DateTime  @default(now())
+  messages      Message[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderType     SenderType
+  content        String
+  fileUrl        String?
+  isRead         Boolean      @default(false)
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+}
+
+model Notification {
+  id          String      @id @default(uuid())
+  recipientId String
+  type        String      // booking.created, payment.success, etc.
+  channel     ChannelType
+  content     String
+  status      String      // PENDING, SENT, FAILED
+  errorLog    String?
+  createdAt   DateTime    @default(now())
+}
+
+model SiteSettings {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  category    String   @default("general")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String     @id @default(uuid())
+  userId    String?
+  user      AdminUser? @relation(fields: [userId], references: [id])
+  action    String
+  details   Json?
+  ipAddress String?
+  createdAt DateTime   @default(now())
+}
