@@ -46,27 +46,39 @@ export default function SlideGallery({ images }: SlideGalleryProps) {
   };
 
   return (
-    <div className="relative w-full h-[550px] group overflow-hidden rounded-3xl shadow-2xl border border-white/5">
-      {/* Slide Image */}
-      <div className="absolute inset-0 transition-opacity duration-1000 ease-in-out">
+    <div className="relative w-full h-[520px] md:h-[600px] group overflow-hidden rounded-3xl shadow-2xl border border-white/10 bg-slate-950">
+      {/* Ambient Blurred Backdrop to smoothly fill widescreen/portrait borders without cropping */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <Image
+          src={getImageUrl(images[currentIndex].url)}
+          alt=""
+          fill
+          aria-hidden="true"
+          className="object-cover blur-3xl opacity-35 scale-110"
+        />
+        <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-xl" />
+      </div>
+
+      {/* Main Full Uncropped Photo */}
+      <div className="relative w-full h-full flex items-center justify-center p-2 md:p-4">
         <Image
           src={getImageUrl(images[currentIndex].url)}
           alt={images[currentIndex].alt}
           fill
           priority
           sizes="(max-width: 1200px) 100vw, 1200px"
-          className="object-cover transition-transform duration-10000 ease-linear transform group-hover:scale-105"
+          className="object-contain drop-shadow-2xl transition-all duration-700 select-none"
         />
-        {/* Shadow Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
+        {/* Bottom Vignette for text contrast */}
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent pointer-events-none" />
       </div>
 
       {/* Description Overlay */}
-      <div className="absolute bottom-8 left-8 right-8 z-10">
-        <span className="px-3 py-1 bg-sky-500/20 border border-sky-400/30 text-sky-400 text-xs uppercase tracking-wider rounded-full backdrop-blur-md">
+      <div className="absolute bottom-6 left-6 md:left-8 z-10 max-w-lg">
+        <span className="px-3 py-1 bg-sky-500/20 border border-sky-400/30 text-sky-400 text-xs font-semibold uppercase tracking-wider rounded-full backdrop-blur-md">
           Property View
         </span>
-        <h3 className="text-2xl md:text-3xl font-bold text-white mt-3 font-display">
+        <h3 className="text-xl md:text-2xl font-bold text-white mt-2 font-display drop-shadow">
           {images[currentIndex].alt}
         </h3>
       </div>

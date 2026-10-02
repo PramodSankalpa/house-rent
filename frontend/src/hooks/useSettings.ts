@@ -15,7 +15,7 @@ export interface SiteSettings {
 export function useSettings() {
   const [settings, setSettings] = useState<SiteSettings>({
     whatsapp_number: '+94774402546',
-    phone_number: '+94917654321',
+    phone_number: '0094774402546',
     contact_email: 'hello@ahungallabeachhouse.com',
     google_maps_url: 'https://maps.app.goo.gl/pMC4zUotycCCD3m48',
     site_title: 'Ahungalla Beach House',

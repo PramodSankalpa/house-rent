@@ -85,7 +85,12 @@ export default function RootLayout({
                 >
                   WhatsApp: +94 77 440 2546
                 </a>
-                <p>Phone: +94 91 765 4321</p>
+                <a
+                  href="tel:0094774402546"
+                  className="hover:text-sky-400 transition duration-300 block"
+                >
+                  Phone: 0094774402546
+                </a>
                 <p>Email: hello@ahungallabeachhouse.com</p>
               </div>
             </div>

@@ -156,7 +156,7 @@ async function main() {
   // 6. Add Dynamic Site Settings
   const settings = [
     { key: 'whatsapp_number', value: '+94774402546', description: 'WhatsApp contact number with country code', category: 'contact' },
-    { key: 'phone_number', value: '+94917654321', description: 'Office phone number', category: 'contact' },
+    { key: 'phone_number', value: '0094774402546', description: 'Office phone number', category: 'contact' },
     { key: 'contact_email', value: 'hello@ahungallabeachhouse.com', description: 'Guest inquiries email address', category: 'contact' },
     { key: 'google_maps_url', value: 'https://maps.app.goo.gl/pMC4zUotycCCD3m48', description: 'Direct links for directions', category: 'general' },
     { key: 'site_title', value: 'Ahungalla Beach House', description: 'Website title branding', category: 'branding' },
