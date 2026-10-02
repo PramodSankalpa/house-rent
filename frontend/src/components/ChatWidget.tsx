@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { MessageSquare, X, Send, CheckCheck, User, Mail, Phone, Loader, LogOut } from 'lucide-react';
-import api from '../utils/api';
+import api, { getBackendUrl } from '../utils/api';
 
 interface Message {
   id: string;
@@ -67,7 +67,7 @@ export default function ChatWidget() {
   useEffect(() => {
     if (!conversationId) return;
 
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const backendUrl = getBackendUrl();
     const socket = io(backendUrl);
     socketRef.current = socket;
 

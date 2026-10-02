@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Waves, Calendar, ShieldCheck, Check, Sparkles, MapPin, Loader, Info, HelpCircle, X, ChevronLeft, ChevronRight, Sunset, Compass, Anchor, Camera, Activity } from 'lucide-react';
-import api from '../utils/api';
+import { Waves, Calendar, ShieldCheck, Check, Sparkles, MapPin, Loader, Info, HelpCircle, X, ChevronLeft, ChevronRight, Sunset, Compass, Anchor, Camera, Activity, RefreshCw } from 'lucide-react';
+import api, { getBackendUrl } from '../utils/api';
 import SlideGallery from '@/components/SlideGallery';
 import Map from '@/components/Map';
 
@@ -103,8 +103,7 @@ export default function HomePage() {
 
   const getImageUrl = (url: string) => {
     if (url.startsWith('http')) return url;
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    return `${backendUrl}${url}`;
+    return `${getBackendUrl()}${url}`;
   };
 
   const categories = ['All', 'Bedroom', 'Living Space', 'Kitchen & Dining', 'Beach & Exterior'];
@@ -135,18 +134,20 @@ export default function HomePage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [lightboxIndex, filteredImages]);
 
+  const loadProperty = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/properties/slug/ahungalla-beach-house');
+      setProperty(response.data);
+    } catch (err) {
+      console.error('Error fetching property:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Load default property
   useEffect(() => {
-    async function loadProperty() {
-      try {
-        const response = await api.get('/properties/slug/ahungalla-beach-house');
-        setProperty(response.data);
-      } catch (err) {
-        console.error('Error fetching property:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
     loadProperty();
   }, []);
 
@@ -222,10 +223,19 @@ export default function HomePage() {
 
   if (!property) {
     return (
-      <div className="min-h-[500px] flex items-center justify-center text-center">
-        <div>
-          <h2 className="text-2xl font-bold font-display text-white">Property Not Seeding</h2>
-          <p className="text-slate-400 mt-2">Please verify that backend container is running and seed script succeeded.</p>
+      <div className="min-h-[500px] flex items-center justify-center text-center px-4">
+        <div className="max-w-md p-8 rounded-3xl glass-card border border-white/10 space-y-4">
+          <h2 className="text-2xl font-bold font-display text-white">Connecting to Paradise...</h2>
+          <p className="text-slate-400 text-sm">
+            Could not retrieve property details. The backend service may still be initializing.
+          </p>
+          <button
+            onClick={() => loadProperty()}
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-900 text-sm font-bold rounded-2xl transition duration-300"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Retry Connection
+          </button>
         </div>
       </div>
     );

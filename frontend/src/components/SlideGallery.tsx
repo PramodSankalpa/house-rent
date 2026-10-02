@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { getBackendUrl } from '../utils/api';
 
 interface SlideImage {
   id: string;
@@ -41,8 +42,7 @@ export default function SlideGallery({ images }: SlideGalleryProps) {
 
   const getImageUrl = (url: string) => {
     if (url.startsWith('http')) return url;
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    return `${backendUrl}${url}`;
+    return `${getBackendUrl()}${url}`;
   };
 
   return (

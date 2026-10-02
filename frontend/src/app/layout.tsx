@@ -2,6 +2,7 @@ import './globals.css';
 import Link from 'next/link';
 import { Waves, Calendar, MessageSquare, ShieldAlert } from 'lucide-react';
 import ChatWidget from '@/components/ChatWidget';
+import AdminNavLink from '@/components/AdminNavLink';
 
 export const metadata = {
   title: 'Ahungalla Beach House – Luxury Vacation Rental Sri Lanka',
@@ -29,10 +30,7 @@ export default function RootLayout({
               <Link href="/#amenities" className="hover:text-white transition">Amenities</Link>
               <Link href="/#location" className="hover:text-white transition">Location</Link>
               <Link href="/booking/lookup" className="hover:text-white transition">Manage Booking</Link>
-              <Link href="/admin/login" className="flex items-center gap-1 text-slate-400 hover:text-white transition">
-                <ShieldAlert className="w-4 h-4" />
-                Admin
-              </Link>
+              <AdminNavLink />
             </nav>
 
             <Link

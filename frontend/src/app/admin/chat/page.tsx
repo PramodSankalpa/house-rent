@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { Send, CheckCheck, User, Mail, Phone, MessageSquare, Loader, Waves } from 'lucide-react';
-import api from '../../../utils/api';
+import api, { getBackendUrl } from '../../../utils/api';
 
 interface Guest {
   name: string;
@@ -59,7 +59,7 @@ export default function AdminChatInbox() {
   useEffect(() => {
     fetchConversations(true);
 
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const backendUrl = getBackendUrl();
     const socket = io(backendUrl);
     socketRef.current = socket;
 

@@ -1,17 +1,32 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+export function getBackendUrl(): string {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    // If accessing via local network IP or localhost, dynamically point to host port 3001
+    if (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      /^10\./.test(hostname) ||
+      /^192\.168\./.test(hostname) ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname)
+    ) {
+      return `http://${hostname}:3001`;
+    }
+  }
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+}
 
 const api = axios.create({
-  baseURL: `${API_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Auto-attach authorization token
+// Auto-attach authorization token and dynamic baseURL
 api.interceptors.request.use(
   (config) => {
+    config.baseURL = `${getBackendUrl()}/api`;
     if (typeof window !== 'undefined') {
       const token = sessionStorage.getItem('token');
       if (token) {

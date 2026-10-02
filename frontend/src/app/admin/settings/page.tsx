@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Settings, ShieldAlert, Plus, Trash, Loader, Compass, Save, Check, Lock, Upload, Image as ImageIcon, CheckCircle } from 'lucide-react';
-import api from '../../../utils/api';
+import api, { getBackendUrl } from '../../../utils/api';
 import Image from 'next/image';
 
 interface SettingItem {
@@ -258,8 +258,7 @@ export default function AdminSettingsPage() {
 
   const getImageUrl = (url: string) => {
     if (url.startsWith('http')) return url;
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    return `${backendUrl}${url}`;
+    return `${getBackendUrl()}${url}`;
   };
 
   if (loading) {

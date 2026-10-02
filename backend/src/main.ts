@@ -16,9 +16,9 @@ async function bootstrap() {
   // Setup prefix
   app.setGlobalPrefix('api');
 
-  // Configure CORS for web client access
+  // Configure CORS for web client access (supports localhost, 127.0.0.1, and local network IPs)
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: true,
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Accept, Authorization',
